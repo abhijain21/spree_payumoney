@@ -32,13 +32,12 @@ module Spree
 
     def confirm
       payment_method = Spree::PaymentMethod.find(payment_method_id)
+      order = current_order || raise(ActiveRecord::RecordNotFound)
 
       Spree::LogEntry.create({
-        source: payment_method,
-        details: params.to_yaml
+        source: order,
+        details: params.merge(payment: "Success").to_yaml
       })
-
-      order = current_order || raise(ActiveRecord::RecordNotFound)
       
       if(address = order.bill_address || order.ship_address)
         firstname = address.firstname
@@ -85,11 +84,11 @@ module Spree
     def cancel
       #log some entry into table
       Spree::LogEntry.create({
-        source: 'Spree::Gateway::Payumoney',
-        details: params.to_yaml
+        source: current_order,
+        details: params.merge(payment: "Failed").to_yaml
       })
       
-      flash[:notice] = "Don't want to use Payumoney? No problems."
+      flash[:notice] = "Your Payumoney transaction has been cancelled / failed. Please try again."
       #redirect to payment path and ask user to complete checkout
       #with different payment method
       redirect_to checkout_state_path(current_order.state)
