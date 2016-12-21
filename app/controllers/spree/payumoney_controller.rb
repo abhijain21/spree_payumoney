@@ -1,7 +1,8 @@
 module Spree
   class PayumoneyController < StoreController
     protect_from_forgery only: :index
-    @productinfo = 'apparel'
+    
+    before_filter set_product_info, only: [:index, :confirm]
     
     def index
       @surl = payumoney_confirm_url
@@ -98,5 +99,10 @@ module Spree
     def payment_method_id
       params[:udf4]
     end
+    
+    def set_product_info
+      @productinfo = "DUMMYTEXT"
+    end
+
   end
 end
