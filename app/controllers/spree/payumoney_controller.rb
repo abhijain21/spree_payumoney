@@ -2,7 +2,7 @@ module Spree
   class PayumoneyController < StoreController
     protect_from_forgery only: :index
     
-    before_filter set_product_info, only: [:index, :confirm]
+    before_filter :set_product_info, only: [:index, :confirm]
     
     def index
       @surl = payumoney_confirm_url
